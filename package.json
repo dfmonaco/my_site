@@ -7,5 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Diego Mónaco",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "metalsmith": "^2.0.1"
+  }
 }
