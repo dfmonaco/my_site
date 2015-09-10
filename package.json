@@ -10,6 +10,7 @@
   "license": "ISC",
   "devDependencies": {
     "consolidate": "^0.13.1",
+    "highlight": "^0.2.3",
     "metalsmith": "^2.0.1",
     "metalsmith-collections": "^0.7.0",
     "metalsmith-layouts": "^1.4.0",

@@ -8,6 +8,7 @@ var collections = require('metalsmith-collections');
 var consolidate = require('consolidate');
 var nunjucks = require('nunjucks');
 var dateFilter = require('nunjucks-date-filter');
+var highlight = require('highlight');
 
 // Local
 var config = require('./config');
@@ -42,7 +43,16 @@ metalsmith(__dirname)
       sortBy: 'priority'
     }
    }))
-  .use(markdown())
+  .use(markdown({
+    langPrefix: 'hljs ',
+    highlight: function (code, lang) {
+      if (lang) {
+        return highlight.highlight(lang, code).value;
+      } else {
+        return highlight.highlightAuto(code).value;
+      }
+    }
+  }))
   .use(layouts({
     engine: 'nunjucks',
     directory: 'templates'
