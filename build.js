@@ -6,6 +6,7 @@ var collections = require('metalsmith-collections');
 var branch = require('metalsmith-branch');
 var permalinks = require('metalsmith-permalinks');
 var drafts = require('metalsmith-drafts');
+var feed = require('metalsmith-feed');
 
 // Modules
 var consolidate = require('consolidate');
@@ -77,6 +78,7 @@ metalsmith(__dirname)
       relative: false
     }))
   )
+  .use(feed({collection: 'posts'}))
   .build(function(err) {
     if (err) {
       throw err;
