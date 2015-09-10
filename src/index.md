@@ -15,5 +15,5 @@ permalink: false
 
 I solve problems with code.
 
-<p><a href="/projects" class="btn">View Projects</a></p>
+<p><a href="/about" class="btn">About</a></p>
 

@@ -1,27 +1,39 @@
 var metalsmith = require('metalsmith');
 var markdown = require('metalsmith-markdown');
 var layouts = require('metalsmith-layouts');
+var collections = require('metalsmith-collections');
 
 var consolidate = require('consolidate');
 var nunjucks = require('nunjucks');
 
 var config = require('./config');
-var metadata;
+var globalData;
 var env = 'development';
 
 nunjucks.configure('./templates');
 consolidate.requires.nunjucks = nunjucks
 
 if (env == 'production') {
-  metadata = config.production;
+  globalData = config.production;
 } else {
-  metadata = config.development;
+  globalData = config.development;
 };
 
 metalsmith(__dirname)
-  .metadata(metadata)
+  .metadata(globalData)
   .source('./src')
   .destination('./build')
+  .use(collections({
+    posts: {
+      pattern: 'posts/*.md',
+      sortBy: 'date',
+      reverse: true
+    },
+    pages: {
+      pattern: '*.md',
+      sortBy: 'priority'
+    }
+   }))
   .use(markdown())
   .use(layouts({
     engine: 'nunjucks',
