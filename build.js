@@ -7,6 +7,7 @@ var branch = require('metalsmith-branch');
 var permalinks = require('metalsmith-permalinks');
 var drafts = require('metalsmith-drafts');
 var feed = require('metalsmith-feed');
+var excerpts = require('metalsmith-better-excerpts');
 
 // Modules
 var consolidate = require('consolidate');
@@ -58,6 +59,9 @@ metalsmith(__dirname)
       }
     }
   }))
+  .use(excerpts({
+    pruneLength: 160
+  }))
   .use(layouts({
     engine: 'nunjucks',
     directory: 'templates'
@@ -83,6 +87,7 @@ metalsmith(__dirname)
     if (err) {
       throw err;
     } else {
+      console.log(this.metadata());
       console.log('Build successful!');
     }
   });
