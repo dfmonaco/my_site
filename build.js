@@ -3,6 +3,8 @@ var metalsmith = require('metalsmith');
 var markdown = require('metalsmith-markdown');
 var layouts = require('metalsmith-layouts');
 var collections = require('metalsmith-collections');
+var branch = require('metalsmith-branch');
+var permalinks = require('metalsmith-permalinks');
 
 // Modules
 var consolidate = require('consolidate');
@@ -57,6 +59,22 @@ metalsmith(__dirname)
     engine: 'nunjucks',
     directory: 'templates'
    }))
+  .use(
+    branch(function(filename, props, i) {
+      return props.collection[0] == 'posts';
+    }).use(permalinks({
+      pattern: 'blog/:title',
+      relative: false
+    }))
+  )
+  .use(
+    branch(function(filename, props, i) {
+      return props.collection[0] == 'pages';
+    }).use(permalinks({
+      pattern: ':title',
+      relative: false
+    }))
+  )
   .build(function(err) {
     if (err) {
       throw err;
