@@ -1,0 +1,43 @@
+{% extends './default.html' %}
+
+{% block title %}
+  Diego Mónaco | Software Engineer
+{% endblock %}
+
+{% block hero %}
+  <header class="hero content {{ classModifier or 'home' }}">
+    <div class="l-container fluid">
+      {{contents | safe}}
+    </div>
+  </header>
+{% endblock %}
+
+
+{% block content %}
+  {% if collections.posts.length > 0 %}
+    <h3 class="section-title">Recent Posts</h3>
+    <div class="collection">
+      {% for post in collections.posts %}
+        {% if loop.index <= 3 %}
+          <div class="content">
+            <a href="{{baseUrl}}/{{post.path}}">
+              <p class="content-date collapse">{{ post.date | date }}</p>
+              <h4 class="content-title">{{post.title}}</h4>
+              <p class="content-summary">
+                {{post.excerpt | safe}}
+              </p>
+            </a>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% if collections.posts.length > 3 %}
+    <div class="pagination clearfix">
+      <div class="right">
+        <a class="btn outline" href="{{ baseUrl }}/blog">view all posts</a>
+      </div>
+    </div>
+    {% endif %}
+  {% endif %}
+{% endblock %}
+

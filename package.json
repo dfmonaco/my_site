@@ -9,7 +9,10 @@
   "author": "Diego Mónaco",
   "license": "ISC",
   "devDependencies": {
+    "consolidate": "^0.13.1",
     "metalsmith": "^2.0.1",
-    "metalsmith-markdown": "^0.2.1"
+    "metalsmith-layouts": "^1.4.0",
+    "metalsmith-markdown": "^0.2.1",
+    "nunjucks": "^2.0.0"
   }
 }
