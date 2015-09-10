@@ -5,6 +5,7 @@ var layouts = require('metalsmith-layouts');
 var collections = require('metalsmith-collections');
 var branch = require('metalsmith-branch');
 var permalinks = require('metalsmith-permalinks');
+var drafts = require('metalsmith-drafts');
 
 // Modules
 var consolidate = require('consolidate');
@@ -34,6 +35,7 @@ metalsmith(__dirname)
   .metadata(globalData)
   .source('./src')
   .destination('./build')
+  .use(drafts())
   .use(collections({
     posts: {
       pattern: 'posts/*.md',
