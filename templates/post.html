@@ -1,0 +1,56 @@
+{% extends './default.html' %}
+
+{% block title %}
+  {{title}}
+{% endblock %}
+
+{% block hero %}
+  <header class="hero content post {{ classModifier }}">
+    <div class="l-container fluid">
+      <h1>{{ title }}</h1>
+      <p class="collapse">Published on {{ date | date }}</p>
+      <p class="collapse">
+        {% for tag in tags %}
+          <a href="{{baseUrl}}/tags/{{tag | replace(' ', '-')}}" title="{{tag}}">{{tag}}</a>
+          {% if not loop.last %}, {% endif %}
+        {% endfor %}
+      </p>
+      {% if not notweet %}
+      <p class="twitter">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-url="{{ site.url }}/{{path}}" data-text="{{title}}" data-via="dfmonaco">
+          Tweet
+        </a>
+        &nbsp;
+      </p>
+      {% endif %}
+    </div>
+  </header>
+{% endblock %}
+
+{% block content %}
+  <div class="content">
+    {{contents | safe}}
+  </div>
+  {% if site.comments and site.disqus %}
+    <div class="comments">
+      <div id="disqus_thread"></div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block thirdparty %}
+  <script type="text/javascript">
+    // disqus
+    var disqus_shortname = '{{site.disqus}}';
+    var disqus_title = '{{title}}';
+    var disqus_url = '{{site.url}}/{{path}}/';
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    // Twitter
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+  </script>
+{% endblock %}
+
