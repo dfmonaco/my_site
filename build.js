@@ -11,6 +11,7 @@ var excerpts = require('metalsmith-better-excerpts');
 var pagination = require('metalsmith-pagination');
 var tags = require('metalsmith-tags');
 var writemetadata = require('metalsmith-writemetadata');
+var sitemap = require('metalsmith-sitemap');
 
 // Modules
 var consolidate = require('consolidate');
@@ -115,6 +116,15 @@ metalsmith(__dirname)
         },
         ignorekeys: ['history', 'stats', 'next', 'template', 'previous', 'collection', 'mode'],
       }
+    }
+  }))
+  .use(sitemap({
+    hostname: globalData.site.url,
+    defaults: {
+      lastModified: Date.now()
+    },
+    root: {
+      lastModifed: Date.now()
     }
   }))
   .use(feed({collection: 'posts'}))

@@ -2,7 +2,7 @@
 title: About
 name: About
 layout: page-collection.html
-priority: 3
+priority: 0.9
 linkTitle: About
 ---
 
