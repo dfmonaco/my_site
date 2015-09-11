@@ -64,10 +64,6 @@ metalsmith(__dirname)
   .use(excerpts({
     pruneLength: 160
   }))
-  .use(layouts({
-    engine: 'nunjucks',
-    directory: 'templates'
-   }))
   .use(
     branch(function(filename, props, i) {
       return props.collection[0] == 'posts';
@@ -87,7 +83,7 @@ metalsmith(__dirname)
   .use(pagination({
     'collections.posts': {
       perPage: 10,
-      template: 'collection.html',
+      layout: 'collection.html',
       first: 'blog/index.html',
       path: 'blog/:num/index.html'
     }
@@ -100,6 +96,10 @@ metalsmith(__dirname)
     perPage: 10,
     sortBy: 'date',
     reverse: true
+  }))
+  .use(layouts({
+    engine: 'nunjucks',
+    directory: 'templates'
   }))
   .use(feed({collection: 'posts'}))
   .build(function(err) {
