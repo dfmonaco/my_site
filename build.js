@@ -8,6 +8,7 @@ var permalinks = require('metalsmith-permalinks');
 var drafts = require('metalsmith-drafts');
 var feed = require('metalsmith-feed');
 var excerpts = require('metalsmith-better-excerpts');
+var pagination = require('metalsmith-pagination');
 
 // Modules
 var consolidate = require('consolidate');
@@ -82,6 +83,14 @@ metalsmith(__dirname)
       relative: false
     }))
   )
+  .use(pagination({
+    'collections.posts': {
+      perPage: 10,
+      template: 'collection.html',
+      first: 'blog/index.html',
+      path: 'blog/:num/index.html'
+    }
+  }))
   .use(feed({collection: 'posts'}))
   .build(function(err) {
     if (err) {
