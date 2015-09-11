@@ -10,6 +10,7 @@ var feed = require('metalsmith-feed');
 var excerpts = require('metalsmith-better-excerpts');
 var pagination = require('metalsmith-pagination');
 var tags = require('metalsmith-tags');
+var writemetadata = require('metalsmith-writemetadata');
 
 // Modules
 var consolidate = require('consolidate');
@@ -100,6 +101,21 @@ metalsmith(__dirname)
   .use(layouts({
     engine: 'nunjucks',
     directory: 'templates'
+  }))
+  .use(writemetadata({
+    bufferencoding: 'utf8',
+    collections: {
+      posts: {
+        output: {
+          asObject: true,
+          path: 'blog/index.json',
+          metadata: {
+            "type": "list"
+          }
+        },
+        ignorekeys: ['history', 'stats', 'next', 'template', 'previous', 'collection', 'mode'],
+      }
+    }
   }))
   .use(feed({collection: 'posts'}))
   .build(function(err) {

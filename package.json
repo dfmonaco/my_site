@@ -22,6 +22,7 @@
     "metalsmith-pagination": "^1.1.1",
     "metalsmith-permalinks": "^0.4.0",
     "metalsmith-tags": "^0.13.0",
+    "metalsmith-writemetadata": "^0.4.5",
     "nunjucks": "^2.0.0",
     "nunjucks-date-filter": "^0.1.1"
   }
