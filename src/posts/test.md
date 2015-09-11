@@ -3,7 +3,7 @@ title: Test post
 layout: post.html
 date: 2015-07-28
 author: Diego Mónaco
-tags: foo bar
+tags: foo, bar
 ---
 
 Global yada yada.

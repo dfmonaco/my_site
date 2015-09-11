@@ -9,6 +9,7 @@ var drafts = require('metalsmith-drafts');
 var feed = require('metalsmith-feed');
 var excerpts = require('metalsmith-better-excerpts');
 var pagination = require('metalsmith-pagination');
+var tags = require('metalsmith-tags');
 
 // Modules
 var consolidate = require('consolidate');
@@ -90,6 +91,15 @@ metalsmith(__dirname)
       first: 'blog/index.html',
       path: 'blog/:num/index.html'
     }
+  }))
+  .use(tags({
+    handle: 'tags',
+    layout: 'tags.html',
+    path: 'tags/:tag/index.html',
+    pathPage: 'tags/:tag/:num/index.html',
+    perPage: 10,
+    sortBy: 'date',
+    reverse: true
   }))
   .use(feed({collection: 'posts'}))
   .build(function(err) {

@@ -3,7 +3,7 @@ title: Test post 2
 layout: post.html
 date: 2015-07-10
 author: Diego Mónaco
-tags: foo bar
+tags: foo, qux
 ---
 
 Sraasasadsaf test 2

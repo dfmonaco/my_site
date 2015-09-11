@@ -3,7 +3,7 @@ title: Test post 3
 layout: post.html
 date: 2015-07-01
 author: Diego Mónaco
-tags: foo bar
+tags: bar, baz
 ---
 
 Safsadda test post 3
