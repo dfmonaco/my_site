@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/images/favicon.ico">
+    <title>
+      
+  Test post
+
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Diego Mónaco" href="/rss.xml">
+    <meta name="description" content="Diego Mónaco - Software Engineer"/>
+  </head>
+  <body>
+    <div class="l-main">
+      <header class="l-header">
+  <div class="l-container fluid">
+    <a href="/" class="brand"></a>
+    <ul class="nav">
+      <li><a href="/blog">Blog</a></li>
+      <li><a href="/about-me">About Me</a></li>
+      
+        
+      
+        
+      
+        
+      
+    </ul>
+  </div>
+</header>
+
+
+      
+  <header class="hero content post ">
+    <div class="l-container fluid">
+      <h1>Test post</h1>
+      <p class="collapse">Published on July 28, 2015</p>
+      <p class="collapse">
+        
+          <a href="/tags/foo" title="foo">foo</a>
+          , 
+        
+          <a href="/tags/bar" title="bar">bar</a>
+          
+        
+      </p>
+      
+      <p class="twitter">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://dfmonaco.github.io/blog/test-post" data-text="Test post" data-via="dfmonaco">
+          Tweet
+        </a>
+        &nbsp;
+      </p>
+      
+    </div>
+  </header>
+
+      <div class="l-container" role="main">
+        
+  <div class="content">
+    <p>Global yada yada.</p>
+<pre><code class="hljs js"><span class="hljs-comment">// Global data</span>
+<span class="hljs-keyword">if</span> (env == <span class="hljs-string">'production'</span>) {
+  globalData = config.production;
+} <span class="hljs-keyword">else</span> {
+  globalData = config.development;
+};
+</code></pre>
+<p>Pipeline sarasa</p>
+<pre><code class="hljs js">metalsmith(__dirname)
+  .metadata(globalData)
+  .source(<span class="hljs-string">'./src'</span>)
+  .destination(<span class="hljs-string">'./build'</span>)
+  .use(collections({
+    posts: {
+      pattern: <span class="hljs-string">'posts/*.md'</span>,
+      sortBy: <span class="hljs-string">'date'</span>,
+      reverse: <span class="hljs-literal">true</span>
+    },
+    pages: {
+      pattern: <span class="hljs-string">'*.md'</span>,
+      sortBy: <span class="hljs-string">'priority'</span>
+    }
+   }))
+  .use(markdown())
+  .use(layouts({
+    engine: <span class="hljs-string">'nunjucks'</span>,
+    directory: <span class="hljs-string">'templates'</span>
+   }))
+  .build(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err</span>) </span>{
+    <span class="hljs-keyword">if</span> (err) {
+      <span class="hljs-keyword">throw</span> err;
+    } <span class="hljs-keyword">else</span> {
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Build successful!'</span>);
+    }
+  });
+</code></pre>
+
+  </div>
+  
+    <div class="comments">
+      <div id="disqus_thread"></div>
+    </div>
+  
+
+      </div>
+    </div>
+    <footer class="l-footer">
+  <div class="l-container">
+    
+      <img class="avatar" src="/images/me.jpg" title="Diego Mónaco">
+    
+    <p class="collapse"><strong>Diego Mónaco</strong></p>
+    <p>follow me on <a href="https://twitter.com/dfmonaco/">twitter</a> & <a href="https://github.com/dfmonaco">github</a></p>
+  </div>
+</footer>
+
+
+    <script src="/js/scripts.js"></script>
+    
+      
+    
+  <script type="text/javascript">
+    // disqus
+    var disqus_shortname = 'example';
+    var disqus_title = 'Test post';
+    var disqus_url = 'https://dfmonaco.github.io/blog/test-post/';
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+    // Twitter
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+  </script>
+
+  </body>
+</html>
+
