@@ -3,6 +3,7 @@
     <a href="{{ baseUrl }}/" class="brand"></a>
     <ul class="nav">
       <li><a href="{{ baseUrl }}/blog">Blog</a></li>
+      <li><a href="{{ baseUrl }}/about-me">About Me</a></li>
       {% for post in collections.pages %}
         {% if post.priority > 1 %}
           <li><a href="{{ baseUrl }}/{{post.path}}">{{post.linkTitle}}</a></li>

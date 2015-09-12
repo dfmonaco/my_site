@@ -13,7 +13,7 @@ permalink: false
 
 <p class="leading">Software Engineer</p>
 
-I solve problems with code.
+I bend computers to my will to solve real world problems.
 
-<p><a href="/about" class="btn">About</a></p>
+<p><a href="/about-me" class="btn">About Me</a></p>
 

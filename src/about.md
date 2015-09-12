@@ -1,9 +1,9 @@
 ---
-title: About
-name: About
+title: About Me
+name: About Me
 layout: page-collection.html
 priority: 0.9
-linkTitle: About
+linkTitle: About Me
 ---
 
 ### Open Source
