@@ -15,5 +15,5 @@ permalink: false
 
 I bend computers to my will to solve real world problems.
 
-<p><a href="/about-me" class="btn">About Me</a></p>
+<p><a href="/my_site/about-me" class="btn">About Me</a></p>
 
