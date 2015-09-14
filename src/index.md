@@ -7,7 +7,7 @@ linkTitle: Home
 permalink: false
 ---
 
-<img class="avatar" src="/images/me.jpg" title="Diego Mónaco">
+<img class="avatar" src="{{ baseUrl }}/images/me.jpg" title="Diego Mónaco">
 
 <h3 class="collapse">Diego Mónaco</h3>
 
