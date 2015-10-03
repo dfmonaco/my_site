@@ -1,8 +1,8 @@
 var config = {
   production: {
-    baseUrl: process.env.BASE_URL || '/my_site', 
+    baseUrl: process.env.BASE_URL || '', 
     site: {
-      url: process.env.SITE_URL || 'https://dfmonaco.github.io',
+      url: process.env.SITE_URL || 'https://dfmonaco.com',
       title: 'Diego Mónaco',
       comments: true,
       disqus: process.env.DISQUS || 'dfmonaco',

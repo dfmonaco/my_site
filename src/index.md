@@ -7,7 +7,7 @@ linkTitle: Home
 permalink: false
 ---
 
-<img class="avatar" src="/my_site/images/me.jpg" title="Diego Mónaco">
+<img class="avatar" src="/images/me.jpg" title="Diego Mónaco">
 
 <h3 class="collapse">Diego Mónaco</h3>
 
@@ -15,5 +15,5 @@ permalink: false
 
 I bend computers to my will to solve real world problems.
 
-<p><a href="/my_site/about-me" class="btn">About Me</a></p>
+<p><a href="/about-me" class="btn">About Me</a></p>
 
