@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/my_site/images/favicon.ico">
+    <title>
+      
+  Understanding Node - The Event Loop
+
+    </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/my_site/css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="Diego Mónaco" href="/my_site/rss.xml">
+    <meta name="description" content="Diego Mónaco - Software Engineer"/>
+  </head>
+  <body>
+    <div class="l-main">
+      <header class="l-header">
+  <div class="l-container fluid">
+    <a href="/my_site/" class="brand"></a>
+    <ul class="nav">
+      <li><a href="/my_site/blog">Blog</a></li>
+      <li><a href="/my_site/about-me">About Me</a></li>
+      
+        
+      
+        
+      
+        
+      
+    </ul>
+  </div>
+</header>
+
+
+      
+  <header class="hero content post ">
+    <div class="l-container fluid">
+      <h1>Understanding Node - The Event Loop</h1>
+      <p class="collapse">Published on July 28, 2015</p>
+      <p class="collapse">
+        
+          <a href="/my_site/tags/Javascript" title="Javascript">Javascript</a>
+          , 
+        
+          <a href="/my_site/tags/NodeJS" title="NodeJS">NodeJS</a>
+          
+        
+      </p>
+      
+      <p class="twitter">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-url="https://dfmonaco.github.io/blog/understanding-node-the-event-loop" data-text="Understanding Node - The Event Loop" data-via="dfmonaco">
+          Tweet
+        </a>
+        &nbsp;
+      </p>
+      
+    </div>
+  </header>
+
+      <div class="l-container" role="main">
+        
+  <div class="content">
+    <p>Node processes JavaScript instructions using a single thread (using the <a href="https://developers.google.com/v8">V8 JavaScript engine</a>), this means that your Node program will execute only one operation at a time, so in order to achieve concurrency, Node uses a bunch of threads running behind the scenes to manage asynchronous I/O tasks (among other things), these operations generate events that end up executing callback functions into the aforementioned single thread of Javascript.</p>
+<p>The event loop is in charge to poll for I/O events and coordinate the execution of all these callbacks, building up and tearing down a single stack on each iteration.</p>
+<p>So how these stacks are built?</p>
+<p>When a Node process executes the input script some instructions may express interest on future events by registering a function to be called when the associated event occurs, after this first stack finishes running, the event loop will start walking through a series of steps synchronously invoking callbacks based on his <a href="http://docs.libuv.org/en/v1.x/design.html#the-i-o-loop">internal algorithm</a>, when the last function on the current iteration returns Node starts the cycle again to run the next &quot;tick&quot; of Javascript code, this loop keeps running until there are no more events to handle and therefore no more callbacks to run.</p>
+<h1 id="callback-types">Callback Types</h1>
+<p>There are four kind of callbacks that can be registered for future execution:</p>
+<h2 id="i-o-callbacks-">I/O callbacks:</h2>
+<p>All I/O operations are consistently implemented as asynchronous, evented data streams, the event loop will poll the OS on every iteration to check for I/O events ready to be handled and will run the corresponding callbacks if any.</p>
+<h2 id="timer-callbacks-">Timer callbacks:</h2>
+<p>Callbacks to be executed sometime in the future specified in milliseconds, Node timers are not interrupts, they simply promise to execute as close as possible to the specified time, though never before. You can run a one-time callback after a specific delay or you can schedule a callback to be executed periodically based on a time interval.</p>
+<p><a href="https://nodejs.org/api/timers.html#timers_settimeout_callback_delay_arg"><code>global.setTimeout</code></a>  </p>
+<p><a href="https://nodejs.org/api/timers.html#timers_setinterval_callback_delay_arg"><code>global.setInterval</code></a></p>
+<h2 id="immediate-callbacks-">Immediate callbacks:</h2>
+<p>Immediate callbacks won&#39;t fire until the next event loop iteration and after all I/O processing. Callbacks for immediates are queued in the order in which they were created.</p>
+<p><a href="https://nodejs.org/api/timers.html#timers_setimmediate_callback_arg"><code>global.setImmediate</code></a></p>
+<h2 id="next-tick-callbacks-">Next Tick callbacks:</h2>
+<p>Next Tick callbacks are run right after each call from C++ into JavaScript. It means that these callbacks will fire as soon as the current stack runs to completion, <strong>before going back to the event loop</strong>, this ensures that they always run before any further I/O processing.</p>
+<p><a href="https://nodejs.org/api/process.html#process_process_nexttick_callback_arg"><code>process.nextTick</code></a></p>
+<p><em>* Names are very missleading here as global.setImmediate is on the next “tick”, and process.nextTick is “immediate”</em></p>
+<h1 id="callback-execution-order">Callback execution order</h1>
+<p>On each iteration of the event loop callbacks are run in the following order:</p>
+<ol>
+<li><p><strong>Run initial script</strong> </p>
+<p>-&gt;  <strong>Run Next Tick callbacks.</strong></p>
+</li>
+<li><p><strong>Run Timer callbacks:</strong> All active timers scheduled for a time before the loop’s concept of now get their callbacks called.</p>
+<p>-&gt;  <strong>Run Next Tick callbacks.</strong></p>
+</li>
+<li><p><strong>Run Pending I/O callbacks:</strong> If the previous iteration deferred any I/O callback it will be run at this point.</p>
+<p>-&gt;  <strong>Run Next Tick callbacks.</strong></p>
+</li>
+<li><p><strong>Run Current I/O callbacks:</strong> At this point the loop will block for I/O for the timeout calculated on a previous step. All I/O related handles that were monitoring a given file descriptor for a read or write operation get their callbacks called at this point.</p>
+<p>-&gt;  <strong>Run Next Tick callbacks.</strong></p>
+</li>
+<li><p><strong>Run Immediate callbacks:</strong> The entire callback queue is processed every event loop iteration.</p>
+<p>-&gt;  <strong>Run Next Tick callbacks.</strong></p>
+</li>
+<li><p><strong>Go to step 2:</strong> Start new cycle</p>
+</li>
+</ol>
+<p>Understanding this, we can clearly see that the entire program can be blocked by JavaScript code because while a call stack is being unrolled no other events can be handled, so it&#39;s the developer task to ensure that the call stack always executes as fast as possible.</p>
+<h1 id="code-time">Code time</h1>
+<pre><code class="hljs javascript"><span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+<span class="hljs-keyword">var</span> tickNumber = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">var</span> executionOrder = <span class="hljs-number">0</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">printExecutionOrder</span>(<span class="hljs-params">caller</span>) </span>{
+  ++executionOrder;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Tick: '</span> + tickNumber + <span class="hljs-string">' #'</span> + executionOrder + <span class="hljs-string">': '</span> + caller);
+};
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">regularCall</span>(<span class="hljs-params">regularCallNumber</span>) </span>{
+  printExecutionOrder(<span class="hljs-string">'regular call '</span> + regularCallNumber);
+};
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">timeOutCall</span>(<span class="hljs-params"></span>) </span>{
+  setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    printExecutionOrder(<span class="hljs-string">'setTimeout'</span>);
+  }, <span class="hljs-number">1</span>);
+};
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">nextTickCall</span>(<span class="hljs-params"></span>) </span>{
+  process.nextTick(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    executionOrder = <span class="hljs-number">0</span>;
+    ++tickNumber;
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'----------------------'</span>);
+    printExecutionOrder(<span class="hljs-string">'nextTick'</span>);
+  });
+};
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setImmediateCall</span>(<span class="hljs-params"></span>) </span>{
+  setImmediate(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    printExecutionOrder(<span class="hljs-string">'setImmediate'</span>);
+    nextTickCall();
+  });
+};
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setIntervalCall</span>(<span class="hljs-params"></span>) </span>{
+  setInterval(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    printExecutionOrder(<span class="hljs-string">'setInterval'</span>);
+  }, <span class="hljs-number">1</span>).unref();
+};
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ioCall</span>(<span class="hljs-params"></span>) </span>{
+  fs.stat(__filename, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    printExecutionOrder(<span class="hljs-string">'I/O'</span>);
+  });
+};
+
+process.on(<span class="hljs-string">'exit'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'etc, etc....'</span>);
+});
+
+setIntervalCall();
+
+regularCall(<span class="hljs-string">'1'</span>);
+
+timeOutCall();
+
+regularCall(<span class="hljs-string">'2'</span>);
+
+nextTickCall();
+
+regularCall(<span class="hljs-string">'3'</span>);
+
+setImmediateCall();
+
+regularCall(<span class="hljs-string">'4'</span>);
+
+ioCall();
+</code></pre>
+<p>Running this script we can see that all the regular function calls are runned in sequencial order, and the execution order for the registered callbacks is exactly what we explained before:</p>
+<pre><code class="hljs bash">$ node event_loop.js
+
+Tick: <span class="hljs-number">0</span> <span class="hljs-comment">#1: regular call 1</span>
+Tick: <span class="hljs-number">0</span> <span class="hljs-comment">#2: regular call 2</span>
+Tick: <span class="hljs-number">0</span> <span class="hljs-comment">#3: regular call 3</span>
+Tick: <span class="hljs-number">0</span> <span class="hljs-comment">#4: regular call 4</span>
+----------------------
+Tick: <span class="hljs-number">1</span> <span class="hljs-comment">#1: nextTick</span>
+Tick: <span class="hljs-number">1</span> <span class="hljs-comment">#2: setInterval</span>
+Tick: <span class="hljs-number">1</span> <span class="hljs-comment">#3: setTimeout</span>
+Tick: <span class="hljs-number">1</span> <span class="hljs-comment">#4: I/O</span>
+Tick: <span class="hljs-number">1</span> <span class="hljs-comment">#5: setImmediate</span>
+----------------------
+Tick: <span class="hljs-number">2</span> <span class="hljs-comment">#1: nextTick</span>
+Tick: <span class="hljs-number">2</span> <span class="hljs-comment">#2: setInterval</span>
+etc, etc....
+</code></pre>
+
+  </div>
+  
+    <div class="comments">
+      <div id="disqus_thread"></div>
+    </div>
+  
+
+      </div>
+    </div>
+    <footer class="l-footer">
+  <div class="l-container">
+    
+      <img class="avatar" src="/my_site/images/me.jpg" title="Diego Mónaco">
+    
+    <p class="collapse"><strong>Diego Mónaco</strong></p>
+    <p>follow me on <a href="https://twitter.com/dfmonaco/">twitter</a> & <a href="https://github.com/dfmonaco">github</a></p>
+  </div>
+</footer>
+
+
+    <script src="/my_site/js/scripts.js"></script>
+    
+      
+    
+  <script type="text/javascript">
+    // disqus
+
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'dfmonaco';
+    var disqus_title = 'Understanding Node - The Event Loop';
+    var disqus_url = 'https://dfmonaco.github.io/blog/understanding-node-the-event-loop/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+
+    // Twitter
+    !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+  </script>
+
+  </body>
+</html>
+
