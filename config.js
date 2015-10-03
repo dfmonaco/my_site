@@ -5,7 +5,7 @@ var config = {
       url: process.env.SITE_URL || 'https://dfmonaco.github.io',
       title: 'Diego Mónaco',
       comments: true,
-      disqus: process.env.DISQUS || 'example',
+      disqus: process.env.DISQUS || 'dfmonaco',
       googleAnalytics: process.env.GOOGLE_ANALYTICS || '123456789'
     }
   },
@@ -15,7 +15,7 @@ var config = {
       url: process.env.DEV_SITE_URL || 'http://localhost:8000',
       title: 'Diego Mónaco',
       comments: true,
-      disqus: process.env.DEV_DISQUS || 'staging-example',
+      disqus: process.env.DEV_DISQUS || 'dfmonaco',
       googleAnalytics: process.env.DEV_GOOGLE_ANALYTICS || false
     }
   }
