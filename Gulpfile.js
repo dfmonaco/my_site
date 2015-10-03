@@ -16,7 +16,8 @@ gulp.task('clean', function (cb) {
 // Images
 var images = function() {
   return gulp.src('assets/images/**/*')
-    .pipe(gulp.dest('build/images'));
+    .pipe(gulp.dest('build/images'))
+    .pipe(connect.reload());
 };
 
 gulp.task('images', ['clean'], images);
@@ -29,7 +30,8 @@ var styles = function() {
       outputStyle: 'compressed',
       includePaths: [].concat(modularscale.sassDir)
     }).on('error', sass.logError))
-    .pipe(gulp.dest('build/css'));
+    .pipe(gulp.dest('build/css'))
+    .pipe(connect.reload());
 };
 
 gulp.task('styles', ['clean'], styles);
@@ -39,7 +41,8 @@ gulp.task('styles-watch', styles);
 var scripts = function() {
   return gulp.src('assets/js/**/*.js')
     .pipe(uglify())
-    .pipe(gulp.dest('build/js'));
+    .pipe(gulp.dest('build/js'))
+    .pipe(connect.reload());
 };
 
 gulp.task('scripts', ['clean'], scripts);
