@@ -6,7 +6,7 @@ priority: 0.9
 linkTitle: About Me
 ---
 
-### Open Source
+### Open Source Projects
 
 #### [Rails Presenter](http://dfmonaco.github.io/rails_presenter/)
 
@@ -18,7 +18,7 @@ DatatablesServer will receive a number of variables from a DataTables client and
 
 <hr>
 
-### Speaking
+### Public Speaking
 
 #### [Understanding Ruby Metaprogramming](http://dfmonaco.github.com/understanding_ruby_metaprogramming/#/)
 #### [AngularJS Introduction](http://dfmonaco.github.io/angularjs-slides/#/)

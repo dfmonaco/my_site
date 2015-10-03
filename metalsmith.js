@@ -38,6 +38,7 @@ function build(production) {
 
   // Metalsmith pipeline
   metalsmith(__dirname)
+    .clean(false)
     .metadata(globalData)
     .source('./src')
     .destination('./build')
