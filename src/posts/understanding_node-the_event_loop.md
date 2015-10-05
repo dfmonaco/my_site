@@ -51,6 +51,11 @@ _* Names are very missleading here as global.setImmediate is on the next “tick
 
 On each iteration of the event loop callbacks are run in the following order:
 
+<p class="stretch">
+  ![event loop](/images/posts/node_event_loop.svg)
+</p>
+
+
 0. __Run initial script__ 
 
   ->  __Run Next Tick callbacks.__
@@ -63,7 +68,7 @@ On each iteration of the event loop callbacks are run in the following order:
 
   ->  __Run Next Tick callbacks.__
 
-3. __Run Current I/O callbacks:__ At this point the loop will block for I/O for the timeout calculated on a previous step. All I/O related handles that were monitoring a given file descriptor for a read or write operation get their callbacks called at this point.
+3. __Run Current I/O callbacks:__ At this point the loop will block for I/O (with a previously calculated timeout), all I/O related handles that were monitoring a given file descriptor for a read or write operation get their callbacks called at this point.
 
   ->  __Run Next Tick callbacks.__
 
@@ -80,92 +85,98 @@ Understanding this, we can clearly see that the entire program can be blocked by
 ```javascript
 var fs = require('fs');
 var tickNumber = 0;
-var executionOrder = 0;
 
-function printExecutionOrder(caller) {
-  ++executionOrder;
-  console.log('Tick: ' + tickNumber + ' #' + executionOrder + ': ' + caller);
+function newTick() {
+  ++tickNumber;
+  console.log('');
 };
 
-function regularCall(regularCallNumber) {
-  printExecutionOrder('regular call ' + regularCallNumber);
+function printExecutionOrder(operation) {
+  console.log('Tick: ' + tickNumber + ' | ' + operation);
 };
 
-function timeOutCall() {
-  setTimeout(function() {
-    printExecutionOrder('setTimeout');
-  }, 1);
-};
+printExecutionOrder('Registering nextTick');
+process.nextTick(function() {
+  printExecutionOrder('  > Executing nextTick');
+  newTick();
+});
 
-function nextTickCall() {
+printExecutionOrder('Registering setTimeout');
+setTimeout(function() {
+  printExecutionOrder('Executing setTimeout');
+
+  printExecutionOrder('Registering nextTick');
   process.nextTick(function() {
-    executionOrder = 0;
-    ++tickNumber;
-    console.log('----------------------');
-    printExecutionOrder('nextTick');
+    printExecutionOrder('  > Executing nextTick');
   });
-};
+}, 1);
 
-function setImmediateCall() {
-  setImmediate(function() {
-    printExecutionOrder('setImmediate');
-    nextTickCall();
+printExecutionOrder('Registering setImmediate');
+setImmediate(function() {
+  printExecutionOrder('Executing setImmediate');
+
+  printExecutionOrder('Registering nextTick');
+  process.nextTick(function() {
+    printExecutionOrder('  > Executing nextTick');
   });
-};
+  // last function executed by the first tick
+  process.nextTick(newTick);
+});
 
-function setIntervalCall() {
-  setInterval(function() {
-    printExecutionOrder('setInterval');
-  }, 1).unref();
-};
+printExecutionOrder('Registering setInterval');
+setInterval(function() {
+  printExecutionOrder('Executing setInterval');
 
-function ioCall() {
-  fs.stat(__filename, function() {
-    printExecutionOrder('I/O');
+  printExecutionOrder('Registering nextTick');
+  process.nextTick(function() {
+    printExecutionOrder('  > Executing nextTick');
   });
-};
+  // unref the handle so the process terminates
+}, 1).unref();
+
+
+printExecutionOrder('Registering I/O');
+fs.stat(__filename, function() {
+  printExecutionOrder('Executing I/O');
+
+  printExecutionOrder('Registering nextTick');
+  process.nextTick(function() {
+    printExecutionOrder('  > Executing nextTick');
+  });
+});
 
 process.on('exit', function() {
   console.log('etc, etc....');
 });
-
-setIntervalCall();
-
-regularCall('1');
-
-timeOutCall();
-
-regularCall('2');
-
-nextTickCall();
-
-regularCall('3');
-
-setImmediateCall();
-
-regularCall('4');
-
-ioCall();
 ```
 
-Running this script we can see that all the regular function calls are runned in sequencial order, and the execution order for the registered callbacks is exactly what we explained before:
+Running this script we can see that the execution order for the registered callbacks is exactly what we explained before:
 
-```bash
+```js
 $ node event_loop.js
+Tick: 0 | Registering nextTick
+Tick: 0 | Registering setTimeout
+Tick: 0 | Registering setImmediate
+Tick: 0 | Registering setInterval
+Tick: 0 | Registering I/O
+Tick: 0 |   > Executing nextTick
 
-Tick: 0 #1: regular call 1
-Tick: 0 #2: regular call 2
-Tick: 0 #3: regular call 3
-Tick: 0 #4: regular call 4
-----------------------
-Tick: 1 #1: nextTick
-Tick: 1 #2: setInterval
-Tick: 1 #3: setTimeout
-Tick: 1 #4: I/O
-Tick: 1 #5: setImmediate
-----------------------
-Tick: 2 #1: nextTick
-Tick: 2 #2: setInterval
+Tick: 1 | Executing setTimeout
+Tick: 1 | Registering nextTick
+Tick: 1 |   > Executing nextTick
+Tick: 1 | Executing setInterval
+Tick: 1 | Registering nextTick
+Tick: 1 |   > Executing nextTick
+Tick: 1 | Executing I/O
+Tick: 1 | Registering nextTick
+Tick: 1 |   > Executing nextTick
+Tick: 1 | Executing setImmediate
+Tick: 1 | Registering nextTick
+Tick: 1 |   > Executing nextTick
+
+Tick: 2 | Executing setInterval
+Tick: 2 | Registering nextTick
+Tick: 2 |   > Executing nextTick
 etc, etc....
 ```
 
