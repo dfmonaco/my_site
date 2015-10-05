@@ -83,6 +83,11 @@
 <p><em>* Names are very missleading here as global.setImmediate is on the next “tick”, and process.nextTick is “immediate”</em></p>
 <h1 id="callback-execution-order">Callback execution order</h1>
 <p>On each iteration of the event loop callbacks are run in the following order:</p>
+<p class="stretch">
+  <img src="/images/posts/node_event_loop.svg" alt="event loop">
+</p>
+
+
 <ol>
 <li><p><strong>Run initial script</strong> </p>
 <p>-&gt;  <strong>Run Next Tick callbacks.</strong></p>
@@ -93,7 +98,7 @@
 <li><p><strong>Run Pending I/O callbacks:</strong> If the previous iteration deferred any I/O callback it will be run at this point.</p>
 <p>-&gt;  <strong>Run Next Tick callbacks.</strong></p>
 </li>
-<li><p><strong>Run Current I/O callbacks:</strong> At this point the loop will block for I/O for the timeout calculated on a previous step. All I/O related handles that were monitoring a given file descriptor for a read or write operation get their callbacks called at this point.</p>
+<li><p><strong>Run Current I/O callbacks:</strong> At this point the loop will block for I/O (with a previously calculated timeout), all I/O related handles that were monitoring a given file descriptor for a read or write operation get their callbacks called at this point.</p>
 <p>-&gt;  <strong>Run Next Tick callbacks.</strong></p>
 </li>
 <li><p><strong>Run Immediate callbacks:</strong> The entire callback queue is processed every event loop iteration.</p>
@@ -106,89 +111,95 @@
 <h1 id="code-time">Code time</h1>
 <pre><code class="hljs javascript"><span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
 <span class="hljs-keyword">var</span> tickNumber = <span class="hljs-number">0</span>;
-<span class="hljs-keyword">var</span> executionOrder = <span class="hljs-number">0</span>;
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">printExecutionOrder</span>(<span class="hljs-params">caller</span>) </span>{
-  ++executionOrder;
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Tick: '</span> + tickNumber + <span class="hljs-string">' #'</span> + executionOrder + <span class="hljs-string">': '</span> + caller);
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">newTick</span>(<span class="hljs-params"></span>) </span>{
+  ++tickNumber;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">''</span>);
 };
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">regularCall</span>(<span class="hljs-params">regularCallNumber</span>) </span>{
-  printExecutionOrder(<span class="hljs-string">'regular call '</span> + regularCallNumber);
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">printExecutionOrder</span>(<span class="hljs-params">operation</span>) </span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Tick: '</span> + tickNumber + <span class="hljs-string">' | '</span> + operation);
 };
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">timeOutCall</span>(<span class="hljs-params"></span>) </span>{
-  setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-    printExecutionOrder(<span class="hljs-string">'setTimeout'</span>);
-  }, <span class="hljs-number">1</span>);
-};
+printExecutionOrder(<span class="hljs-string">'Registering nextTick'</span>);
+process.nextTick(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+  printExecutionOrder(<span class="hljs-string">'  &gt; Executing nextTick'</span>);
+  newTick();
+});
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">nextTickCall</span>(<span class="hljs-params"></span>) </span>{
+printExecutionOrder(<span class="hljs-string">'Registering setTimeout'</span>);
+setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+  printExecutionOrder(<span class="hljs-string">'Executing setTimeout'</span>);
+
+  printExecutionOrder(<span class="hljs-string">'Registering nextTick'</span>);
   process.nextTick(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-    executionOrder = <span class="hljs-number">0</span>;
-    ++tickNumber;
-    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'----------------------'</span>);
-    printExecutionOrder(<span class="hljs-string">'nextTick'</span>);
+    printExecutionOrder(<span class="hljs-string">'  &gt; Executing nextTick'</span>);
   });
-};
+}, <span class="hljs-number">1</span>);
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setImmediateCall</span>(<span class="hljs-params"></span>) </span>{
-  setImmediate(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-    printExecutionOrder(<span class="hljs-string">'setImmediate'</span>);
-    nextTickCall();
+printExecutionOrder(<span class="hljs-string">'Registering setImmediate'</span>);
+setImmediate(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+  printExecutionOrder(<span class="hljs-string">'Executing setImmediate'</span>);
+
+  printExecutionOrder(<span class="hljs-string">'Registering nextTick'</span>);
+  process.nextTick(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    printExecutionOrder(<span class="hljs-string">'  &gt; Executing nextTick'</span>);
   });
-};
+  <span class="hljs-comment">// last function executed by the first tick</span>
+  process.nextTick(newTick);
+});
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">setIntervalCall</span>(<span class="hljs-params"></span>) </span>{
-  setInterval(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-    printExecutionOrder(<span class="hljs-string">'setInterval'</span>);
-  }, <span class="hljs-number">1</span>).unref();
-};
+printExecutionOrder(<span class="hljs-string">'Registering setInterval'</span>);
+setInterval(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+  printExecutionOrder(<span class="hljs-string">'Executing setInterval'</span>);
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ioCall</span>(<span class="hljs-params"></span>) </span>{
-  fs.stat(__filename, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
-    printExecutionOrder(<span class="hljs-string">'I/O'</span>);
+  printExecutionOrder(<span class="hljs-string">'Registering nextTick'</span>);
+  process.nextTick(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    printExecutionOrder(<span class="hljs-string">'  &gt; Executing nextTick'</span>);
   });
-};
+  <span class="hljs-comment">// unref the handle so the process terminates</span>
+}, <span class="hljs-number">1</span>).unref();
+
+
+printExecutionOrder(<span class="hljs-string">'Registering I/O'</span>);
+fs.stat(__filename, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+  printExecutionOrder(<span class="hljs-string">'Executing I/O'</span>);
+
+  printExecutionOrder(<span class="hljs-string">'Registering nextTick'</span>);
+  process.nextTick(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+    printExecutionOrder(<span class="hljs-string">'  &gt; Executing nextTick'</span>);
+  });
+});
 
 process.on(<span class="hljs-string">'exit'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'etc, etc....'</span>);
 });
-
-setIntervalCall();
-
-regularCall(<span class="hljs-string">'1'</span>);
-
-timeOutCall();
-
-regularCall(<span class="hljs-string">'2'</span>);
-
-nextTickCall();
-
-regularCall(<span class="hljs-string">'3'</span>);
-
-setImmediateCall();
-
-regularCall(<span class="hljs-string">'4'</span>);
-
-ioCall();
 </code></pre>
-<p>Running this script we can see that all the regular function calls are runned in sequencial order, and the execution order for the registered callbacks is exactly what we explained before:</p>
-<pre><code class="hljs bash">$ node event_loop.js
+<p>Running this script we can see that the execution order for the registered callbacks is exactly what we explained before:</p>
+<pre><code class="hljs js">$ node event_loop.js
+Tick: <span class="hljs-number">0</span> | Registering nextTick
+Tick: <span class="hljs-number">0</span> | Registering setTimeout
+Tick: <span class="hljs-number">0</span> | Registering setImmediate
+Tick: <span class="hljs-number">0</span> | Registering setInterval
+Tick: <span class="hljs-number">0</span> | Registering I/O
+Tick: <span class="hljs-number">0</span> |   &gt; Executing nextTick
 
-Tick: <span class="hljs-number">0</span> <span class="hljs-comment">#1: regular call 1</span>
-Tick: <span class="hljs-number">0</span> <span class="hljs-comment">#2: regular call 2</span>
-Tick: <span class="hljs-number">0</span> <span class="hljs-comment">#3: regular call 3</span>
-Tick: <span class="hljs-number">0</span> <span class="hljs-comment">#4: regular call 4</span>
-----------------------
-Tick: <span class="hljs-number">1</span> <span class="hljs-comment">#1: nextTick</span>
-Tick: <span class="hljs-number">1</span> <span class="hljs-comment">#2: setInterval</span>
-Tick: <span class="hljs-number">1</span> <span class="hljs-comment">#3: setTimeout</span>
-Tick: <span class="hljs-number">1</span> <span class="hljs-comment">#4: I/O</span>
-Tick: <span class="hljs-number">1</span> <span class="hljs-comment">#5: setImmediate</span>
-----------------------
-Tick: <span class="hljs-number">2</span> <span class="hljs-comment">#1: nextTick</span>
-Tick: <span class="hljs-number">2</span> <span class="hljs-comment">#2: setInterval</span>
+Tick: <span class="hljs-number">1</span> | Executing setTimeout
+Tick: <span class="hljs-number">1</span> | Registering nextTick
+Tick: <span class="hljs-number">1</span> |   &gt; Executing nextTick
+Tick: <span class="hljs-number">1</span> | Executing setInterval
+Tick: <span class="hljs-number">1</span> | Registering nextTick
+Tick: <span class="hljs-number">1</span> |   &gt; Executing nextTick
+Tick: <span class="hljs-number">1</span> | Executing I/O
+Tick: <span class="hljs-number">1</span> | Registering nextTick
+Tick: <span class="hljs-number">1</span> |   &gt; Executing nextTick
+Tick: <span class="hljs-number">1</span> | Executing setImmediate
+Tick: <span class="hljs-number">1</span> | Registering nextTick
+Tick: <span class="hljs-number">1</span> |   &gt; Executing nextTick
+
+Tick: <span class="hljs-number">2</span> | Executing setInterval
+Tick: <span class="hljs-number">2</span> | Registering nextTick
+Tick: <span class="hljs-number">2</span> |   &gt; Executing nextTick
 etc, etc....
 </code></pre>
 
