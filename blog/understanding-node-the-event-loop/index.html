@@ -80,7 +80,7 @@
 <h2 id="next-tick-callbacks-">Next Tick callbacks:</h2>
 <p>Next Tick callbacks are run right after each call from C++ into JavaScript. It means that these callbacks will fire as soon as the current stack runs to completion, <strong>before going back to the event loop</strong>, this ensures that they always run before any further I/O processing.</p>
 <p><a href="https://nodejs.org/api/process.html#process_process_nexttick_callback_arg"><code>process.nextTick</code></a></p>
-<p><em>* Names are very missleading here as global.setImmediate is on the next “tick”, and process.nextTick is “immediate”</em></p>
+<p><em>* Names are very misleading here as global.setImmediate is on the next “tick”, and process.nextTick is “immediate”</em></p>
 <h1 id="callback-execution-order">Callback execution order</h1>
 <p>On each iteration of the event loop callbacks are run in the following order:</p>
 <p class="stretch">
