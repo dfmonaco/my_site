@@ -45,7 +45,7 @@ Next Tick callbacks are run right after each call from C++ into JavaScript. It m
 
 [`process.nextTick`][6]
 
-_* Names are very missleading here as global.setImmediate is on the next “tick”, and process.nextTick is “immediate”_
+_* Names are very misleading here as global.setImmediate is on the next “tick”, and process.nextTick is “immediate”_
 
 # Callback execution order
 
