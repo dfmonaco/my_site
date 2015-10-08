@@ -150,7 +150,7 @@ process.on('exit', function() {
 });
 ```
 
-Running this script we can see that the execution order for the registered callbacks is exactly what we explained before:
+Running this script we can see that the execution order for the registered callbacks is exactly what was described before:
 
 ```js
 $ node event_loop.js
