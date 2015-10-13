@@ -5,25 +5,32 @@
 {% endblock %}
 
 {% block hero %}
-  <header class="hero content {{ classModifier or 'home' }}">
-    <div class="l-container fluid">
-      {{contents | safe}}
+  <header class="{{ classModifier or 'home' }}">
+    <div>
+      <img src="/assets/images/me.jpg" title="Diego Mónaco">
+
+      <h3>Diego Mónaco</h3>
+
+      <p>Software Engineer</p>
+
+      I bend computers to my will to solve real world problems.
+
+      <p><a href="/about-me">About Me</a></p>
     </div>
   </header>
 {% endblock %}
 
-
 {% block content %}
   {% if collections.posts.length > 0 %}
-    <h3 class="section-title">Recent Posts</h3>
-    <div class="collection">
+    <div>
+      <h3>Recent Posts</h3>
       {% for post in collections.posts %}
         {% if loop.index <= 3 %}
-          <div class="content">
+          <div>
             <a href="{{baseUrl}}/{{post.path}}">
-              <p class="content-date collapse">{{ post.date | date }}</p>
-              <h4 class="content-title">{{post.title}}</h4>
-              <p class="content-summary">
+              <p>{{ post.date | date }}</p>
+              <h4>{{post.title}}</h4>
+              <p>
                 {{post.excerpt | safe}}
               </p>
             </a>
@@ -32,10 +39,8 @@
       {% endfor %}
     </div>
     {% if collections.posts.length > 3 %}
-    <div class="pagination clearfix">
-      <div class="right">
-        <a class="btn outline" href="{{ baseUrl }}/blog">view all posts</a>
-      </div>
+    <div>
+      <a href="{{ baseUrl }}/blog">view all posts</a>
     </div>
     {% endif %}
   {% endif %}

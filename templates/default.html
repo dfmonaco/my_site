@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-  <html lang="en">
+<html lang="en">
+
   <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="{{baseUrl}}/images/favicon.ico">
+    <link rel="icon" href="{{baseUrl}}/assets/images/favicon.ico">
     <title>
       {% block title %}
         Diego Mónaco
@@ -13,24 +14,45 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="{{baseUrl}}/css/style.css">
-    <link rel="alternate" type="application/rss+xml" title="{{site.title}}" href="{{ baseUrl }}/rss.xml">
+    <link rel="stylesheet" href="{{baseUrl}}/assets/css/style.css">
+    <link rel="alternate" type="application/rss+xml" title="{{site.title}}" href="{{baseUrl}}/rss.xml">
     <meta name="description" content="Diego Mónaco - Software Engineer"/>
   </head>
+
   <body>
-    <div class="l-main">
-      {% include 'partials/header.html' %}
+    <header class="main">
+      <a href="{{baseUrl}}/" class="logo"></a>
+      <nav>
+        <ul>
+          <li><a href="{{baseUrl}}/blog">Blog</a></li>
+          <li><a href="{{baseUrl}}/about-me">About Me</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <section class="hero">
       {% block hero %}{% endblock %}
-      <div class="l-container" role="main">
-        {% block content %}{% endblock %}
-      </div>
-    </div>
-    {% include 'partials/footer.html' %}
-    <script src="{{ baseUrl }}/js/scripts.js"></script>
+    </section>
+
+    <section class="content">
+      {% block content %}{% endblock %}
+    </section>
+
+    <footer>
+      {% if name != 'home' %}
+        <img class="avatar" src="{{baseUrl}}/assets/images/me.jpg" title="Diego Mónaco">
+      {% endif %}
+      <p><strong>Diego Mónaco</strong></p>
+      <p>follow me on <a href="https://twitter.com/dfmonaco/">twitter</a> & <a href="https://github.com/dfmonaco">github</a></p>
+    </footer>
+
+    <script src="{{baseUrl}}/assets/js/scripts.js"></script>
+
     {% if site.googleAnalytics %}
       {% include 'partials/analytics.html' %}
     {% endif %}
+
     {% block thirdparty %}{% endblock %}
   </body>
-</html>
 
+</html>

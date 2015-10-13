@@ -6,14 +6,3 @@ priority: 1
 linkTitle: Home
 permalink: false
 ---
-
-<img class="avatar" src="/images/me.jpg" title="Diego Mónaco">
-
-<h3 class="collapse">Diego Mónaco</h3>
-
-<p class="leading">Software Engineer</p>
-
-I bend computers to my will to solve real world problems.
-
-<p><a href="/about-me" class="btn">About Me</a></p>
-
