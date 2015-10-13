@@ -8,13 +8,11 @@ linkTitle: About Me
 
 I know for sure that programming it’s my true passion, I want to write code every day until the last day of my life.
 
-I started my romance with programming when I discovered Ruby around 2007, the Ruby community taught me passion for beautiful code, the value of automated tests and object oriented programming taken to its maximum expression, it was also my gateway to Web development, sparking an insatiable thirst for learning new languages and technologies to solve complex problems, SQL, HTML, CSS, Javascript, different backend/frontend frameworks, etc., eventually all of them joined my set of tools.
-
 I like to write clean and readable code, I practice TDD when I think it makes sense, but I always write tests (back-end and front-end), be it before or after implementation code.
 
 Refactoring code to keep it decoupled and easily maintainable it's what I enjoy the most of the development process, trying whenever possible to extract a library here or there that could be useful for the Open Source community.
 
-I am a full stack web developer, I build web applications from scratch, from database design, passing through back-end logic, until front-end work, I can seamlessly work in any feature from end to end.
+I am a full stack web developer, I build web applications from scratch, from database design, through back-end logic, until front-end work, I can seamlessly work in any feature from end to end.
 
 <hr>
 
