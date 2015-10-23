@@ -4,45 +4,47 @@
   Diego Mónaco | Software Engineer
 {% endblock %}
 
-{% block hero %}
-  <header class="{{ classModifier or 'home' }}">
-    <div>
-      <img src="/assets/images/me.jpg" title="Diego Mónaco">
 
-      <h3>Diego Mónaco</h3>
+{% block body %}
+  {% block hero %}
+    <header class="{{ classModifier or 'home' }}">
+      <div>
+        <img src="/assets/images/me.jpg" title="Diego Mónaco">
 
-      <p>Software Engineer</p>
+        <h3>Diego Mónaco</h3>
 
-      I bend computers to my will to solve real world problems.
+        <p>Software Engineer</p>
 
-      <p><a href="/about-me">About Me</a></p>
-    </div>
-  </header>
-{% endblock %}
+        I bend computers to my will to solve real world problems.
 
-{% block content %}
-  {% if collections.posts.length > 0 %}
-    <div>
-      <h3>Recent Posts</h3>
-      {% for post in collections.posts %}
-        {% if loop.index <= 3 %}
-          <div>
-            <a href="{{baseUrl}}/{{post.path}}">
-              <p>{{ post.date | date }}</p>
-              <h4>{{post.title}}</h4>
-              <p>
-                {{post.excerpt | safe}}
-              </p>
-            </a>
-          </div>
-        {% endif %}
-      {% endfor %}
-    </div>
-    {% if collections.posts.length > 3 %}
-    <div>
-      <a href="{{ baseUrl }}/blog">view all posts</a>
-    </div>
+        <p><a href="/about-me">About Me</a></p>
+      </div>
+    </header>
+  {% endblock %}
+
+  {% block content %}
+    {% if collections.posts.length > 0 %}
+      <div>
+        <h3>Recent Posts</h3>
+        {% for post in collections.posts %}
+          {% if loop.index <= 3 %}
+            <div>
+              <a href="{{baseUrl}}/{{post.path}}">
+                <p>{{ post.date | date }}</p>
+                <h4>{{post.title}}</h4>
+                <p>
+                  {{post.excerpt | safe}}
+                </p>
+              </a>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% if collections.posts.length > 3 %}
+      <div>
+        <a href="{{ baseUrl }}/blog">view all posts</a>
+      </div>
+      {% endif %}
     {% endif %}
-  {% endif %}
+  {% endblock %}
 {% endblock %}
-
